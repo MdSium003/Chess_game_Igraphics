@@ -85,6 +85,7 @@ Piece types[7];
 
 void init(){
 	turn = 'W';
+	castling[0] = castling[1] = castling[2] = castling[3] = true; 
 	moveable_index = 0;
 	eliminate_index = 0;
 	temp_eliminate_index = 0;
@@ -110,10 +111,6 @@ void init(){
 	board[1][3] = board[1][6] = 3;
 	board[1][4] = 2;
 	board[1][5] = 1;
-	for(int i = 1;i<=8;i++){
-		board[2][i] = 6;
-		board[0][i] = board[9][i] = 99;
-	}
 	for(int i=3;i<=6;i++){
 		for(int j=1;j<=8;j++){
 			board[i][j] = 0;
@@ -126,6 +123,8 @@ void init(){
 	board[8][4] = -2;
 	board[8][5] = -1;
 	for(int i = 1;i<=8;i++){
+		board[2][i] = 6;
+		board[0][i] = board[9][i] = 99;
 		board[7][i] = -6;
 		board[i][0] = board[i][9] = 99;
 	}
@@ -308,6 +307,109 @@ void GetCoordinates(int x, int y){
 			else if(board[y][x] == -6 && y != 7)break;
 		}
 	}
+	if (board[y][x] == 1 || board[y][x] == -1) {
+		copy_board();
+		bool check = (turn == 'W') ? checksystem(white_x, white_y) : checksystem(black_x, black_y);
+		if (!check){
+			if (board[y][x] == 1 && castling[0]) {
+				int ind = x - 1;
+				bool temp_cas = true;
+				while (ind > 1){
+					if (board[y][ind] != 0) {
+						temp_cas = false;
+						printf("murikha %d %d", y, ind);
+						break;
+					}
+					copy_board();
+					temp_board[y][ind] = temp_board[y][x];
+					temp_board[y][x] = 0;
+					if (checksystem(ind, white_y)) {
+						temp_cas = false;
+						printf("muri khabi");
+						break;
+					}
+					ind--;
+				}
+				if (temp_cas) {
+					moveable[moveable_index][0] = x - 2;
+					moveable[moveable_index][1] = y;
+					moveable_index++;
+				}
+				printf("haha %d %d", moveable[moveable_index][0], moveable[moveable_index][1]);
+			}
+			if (board[y][x] == 1 && castling[1]) {
+				int ind = x + 1;
+				bool temp_cas = true;
+				while (ind < 8) {
+					if (board[y][ind] != 0) {
+						temp_cas = false;
+						break;
+					}
+					copy_board();
+					temp_board[y][ind] = temp_board[y][x];
+					temp_board[y][x] = 0;
+					if (checksystem(ind, white_y)) {
+						temp_cas = false;
+						break;
+					}
+					ind++;
+				}
+				if (temp_cas) {
+					moveable[moveable_index][0] = x + 2;
+					moveable[moveable_index][1] = y;
+					moveable_index++;
+				}
+			}
+			if (board[y][x] == -1 && castling[2]) {
+				int ind = x - 1;
+				bool temp_cas = true;
+				while (ind > 1){
+					if (board[y][ind] != 0) {
+						temp_cas = false;
+						//printf("murikha %d %d", y, ind);
+						break;
+					}
+					copy_board();
+					temp_board[y][ind] = temp_board[y][x];
+					temp_board[y][x] = 0;
+					if (checksystem(ind, black_y)) {
+						temp_cas = false;
+						//printf("muri khabi");
+						break;
+					}
+					ind--;
+				}
+				if (temp_cas) {
+					moveable[moveable_index][0] = x - 2;
+					moveable[moveable_index][1] = y;
+					moveable_index++;
+				}
+			}
+			if (board[y][x] == -1 && castling[3]) {
+				int ind = x + 1;
+				bool temp_cas = true;
+				while (ind < 8) {
+					if (board[y][ind] != 0) {
+						temp_cas = false;
+						break;
+					}
+					copy_board();
+					temp_board[y][ind] = temp_board[y][x];
+					temp_board[y][x] = 0;
+					if (checksystem(ind, black_y)) {
+						temp_cas = false;
+						break;
+					}
+					ind++;
+				}
+				if (temp_cas) {
+					moveable[moveable_index][0] = x + 2;
+					moveable[moveable_index][1] = y;
+					moveable_index++;
+				}
+			}
+		}
+	}
 }
 
 void iDraw() {
@@ -443,6 +545,27 @@ void iMouse(int button, int state, int mx, int my) {
 					page = 3;
 					selectedX = movex;
 					selectedY = movey;
+				}
+
+				if(board[movey][movex] == 1) castling[0] = castling[1] = false;
+				else if(board[movey][movex] == -1) castling[2] = castling[3] = false;
+				else if(board[movey][movex] == 5) {
+					if(selectedX == 1) castling[0] = false;
+					else if(selectedX == 2) castling[1] = false;
+				}
+				else if(board[movey][movex] == -5){
+					if(selectedX == 1) castling [2] = false;
+					else if(selectedX == 8) castling[3] = false;
+				}
+				if(board[movey][movex] == 1 || board[movey][movex] == -1){
+					if((selectedX - movex) == 2){
+						board[movey][movex+1] = board[movey][1];
+						board[movey][1] = 0;
+					}
+					else if((movex - selectedX) == 2){
+						board[movey][movex-1] = board[movey][8];
+						board[movey][8] = 0;
+					}
 				}
 			}
 			if(board[movey][movex] == 1) {
