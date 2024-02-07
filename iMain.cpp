@@ -646,7 +646,7 @@ int main() {
 	init();
 	copy_board();
 	
-	int t = iSetTimer(100, func);
+	int t = iSetTimer(50, func);
 	iInitialize(700,700,"Chess Game");
 	return 0;
 }
