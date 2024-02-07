@@ -96,7 +96,8 @@ char BoardPic[30][50] = {
 	"Pic\\\\ChessBoard\\\\Chess3.bmp",
 	"Pic\\\\ChessBoard\\\\Chess4.bmp",
 	"Pic\\\\ChessBoard\\\\Chess5.bmp",
-	"Pic\\\\ChessBoard\\\\Chess6.bmp"
+	"Pic\\\\ChessBoard\\\\Chess6.bmp",
+	"Pic\\\\ChessBoard\\\\Chess7.bmp"
 };
 int Board_index = 0;
 
@@ -621,7 +622,7 @@ void iKeyboard(unsigned char key) {
 	}
 	if(key == 'b'){
 		Board_index++;
-		if(Board_index >= 6) Board_index = 0;
+		if(Board_index >= 7) Board_index = 0;
 	}
 	//place your codes for other keys here
 }
