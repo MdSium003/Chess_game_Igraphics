@@ -22,8 +22,53 @@ int selectedX,selectedY;
 bool selected = false;
 bool castling[4] = {true, true, true, true};
 
+int openingpageindex = 0;
 int white_x, white_y, black_x, black_y;
 int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
+
+char Opening[50][50] = {
+	"Pic\\\\OpeningPage\\\\(1).bmp",
+	"Pic\\\\OpeningPage\\\\(2).bmp",
+	"Pic\\\\OpeningPage\\\\(3).bmp",
+	"Pic\\\\OpeningPage\\\\(4).bmp",
+	"Pic\\\\OpeningPage\\\\(5).bmp",
+	"Pic\\\\OpeningPage\\\\(6).bmp",
+	"Pic\\\\OpeningPage\\\\(7).bmp",
+	"Pic\\\\OpeningPage\\\\(8).bmp",
+	"Pic\\\\OpeningPage\\\\(9).bmp",
+	"Pic\\\\OpeningPage\\\\(10).bmp",
+	"Pic\\\\OpeningPage\\\\(11).bmp",
+	"Pic\\\\OpeningPage\\\\(12).bmp",
+	"Pic\\\\OpeningPage\\\\(13).bmp",
+	"Pic\\\\OpeningPage\\\\(14).bmp",
+	"Pic\\\\OpeningPage\\\\(15).bmp",
+	"Pic\\\\OpeningPage\\\\(16).bmp",
+	"Pic\\\\OpeningPage\\\\(17).bmp",
+	"Pic\\\\OpeningPage\\\\(18).bmp",
+	"Pic\\\\OpeningPage\\\\(19).bmp",
+	"Pic\\\\OpeningPage\\\\(20).bmp",
+	"Pic\\\\OpeningPage\\\\(21).bmp",
+	"Pic\\\\OpeningPage\\\\(22).bmp",
+	"Pic\\\\OpeningPage\\\\(23).bmp",
+	"Pic\\\\OpeningPage\\\\(24).bmp",
+	"Pic\\\\OpeningPage\\\\(25).bmp",
+	"Pic\\\\OpeningPage\\\\(26).bmp",
+	"Pic\\\\OpeningPage\\\\(27).bmp",
+	"Pic\\\\OpeningPage\\\\(28).bmp",
+	"Pic\\\\OpeningPage\\\\(29).bmp",
+	"Pic\\\\OpeningPage\\\\(30).bmp",
+	"Pic\\\\OpeningPage\\\\(31).bmp",
+	"Pic\\\\OpeningPage\\\\(32).bmp",
+	"Pic\\\\OpeningPage\\\\(33).bmp",
+	"Pic\\\\OpeningPage\\\\(34).bmp",
+	"Pic\\\\OpeningPage\\\\(35).bmp",
+	"Pic\\\\OpeningPage\\\\(36).bmp",
+	"Pic\\\\OpeningPage\\\\(37).bmp",
+	"Pic\\\\OpeningPage\\\\(38).bmp",
+	"Pic\\\\OpeningPage\\\\(39).bmp",
+	"Pic\\\\OpeningPage\\\\(40).bmp",
+	"Pic\\\\OpeningPage\\\\(41).bmp"
+};
 
 char path[30][50] = {
 	"Pic\\\\Pieces\\\\white-king.bmp",
@@ -435,7 +480,7 @@ void iDraw() {
 	for(int i=0;i<moveable_index;i++){
 		int cirx = (moveable[i][0]*75) +(52-75) + 4;
 		int ciry = (moveable[i][1]*75) +(52-75) + 4;
-		iShowBMP2(cirx,ciry,"Pic\\Pieces\\circle.bmp",255);
+		iShowBMP2(cirx,ciry,"Pic\\\\Pieces\\\\circle.bmp",255);
 	}
 	for(i=0;i<eliminate_index;i++){
 		int cirx = (eliminate[i][0]*75) +(52-75) + 4;
@@ -449,19 +494,20 @@ void iDraw() {
 		}
 	}
 	if(page == 0){
-		iShowBMP(0,0,"Pic\\page1.bmp");
-		iSetColor(0,0,0);
-		iText(250, 150, "Press space to Enter", GLUT_BITMAP_TIMES_ROMAN_24);
+		iShowBMP(0,0,Opening[openingpageindex]);
 	}
 	if(page == 3) {
 		if(turn == 'W') {
-			iShowBMP(150,100,"Pic\\page2_black.bmp");
+			iShowBMP(150,100,"Pic\\\\page2_black.bmp");
 		}
 		else if(turn == 'B') {
-			iShowBMP(150,100,"Pic\\page2_white.bmp");
+			iShowBMP(150,100,"Pic\\\\page2_white.bmp");
 		}
 	}
-	if(page == 4) iText(100,100, "Keu jite gese", GLUT_BITMAP_TIMES_ROMAN_24);	
+	if(page == 4) {
+		if(turn == 'W') iShowBMP(50,98,"Pic\\\\Black_won.bmp");
+		else iShowBMP(50,98,"Pic\\\\White_won.bmp");
+	}
 }
 
 /*
@@ -616,9 +662,19 @@ void iSpecialKeyboard(unsigned char key) {
 	//place your codes for other keys here
 }
 
+void func(){
+	if(openingpageindex == 40) {
+		openingpageindex = 0;
+		return;
+	}
+	openingpageindex++;
+}
+
 int main() {
 	init();
 	copy_board();
+	
+	int t = iSetTimer(100, func);
 	iInitialize(700,700,"Chess Game");
 	return 0;
 }
