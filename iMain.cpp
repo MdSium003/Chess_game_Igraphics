@@ -1,4 +1,7 @@
 # include "iGraphics.h"
+#include<windows.h>
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")
 
 char turn = 'W';
 int page = 0;
@@ -14,54 +17,208 @@ int count = 0;
 int selectedX,selectedY;
 bool selected = false;
 bool castling[4] = {true, true, true, true};
+bool musicOn = true;
 
-int openingpageindex = 0;
 int white_x, white_y, black_x, black_y;
 int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
 
-char Opening[50][50] = {
-	"Pic\\\\OpeningPage\\\\(1).bmp",
-	"Pic\\\\OpeningPage\\\\(2).bmp",
-	"Pic\\\\OpeningPage\\\\(3).bmp",
-	"Pic\\\\OpeningPage\\\\(4).bmp",
-	"Pic\\\\OpeningPage\\\\(5).bmp",
-	"Pic\\\\OpeningPage\\\\(6).bmp",
-	"Pic\\\\OpeningPage\\\\(7).bmp",
-	"Pic\\\\OpeningPage\\\\(8).bmp",
-	"Pic\\\\OpeningPage\\\\(9).bmp",
-	"Pic\\\\OpeningPage\\\\(10).bmp",
-	"Pic\\\\OpeningPage\\\\(11).bmp",
-	"Pic\\\\OpeningPage\\\\(12).bmp",
-	"Pic\\\\OpeningPage\\\\(13).bmp",
-	"Pic\\\\OpeningPage\\\\(14).bmp",
-	"Pic\\\\OpeningPage\\\\(15).bmp",
-	"Pic\\\\OpeningPage\\\\(16).bmp",
-	"Pic\\\\OpeningPage\\\\(17).bmp",
-	"Pic\\\\OpeningPage\\\\(18).bmp",
-	"Pic\\\\OpeningPage\\\\(19).bmp",
-	"Pic\\\\OpeningPage\\\\(20).bmp",
-	"Pic\\\\OpeningPage\\\\(21).bmp",
-	"Pic\\\\OpeningPage\\\\(22).bmp",
-	"Pic\\\\OpeningPage\\\\(23).bmp",
-	"Pic\\\\OpeningPage\\\\(24).bmp",
-	"Pic\\\\OpeningPage\\\\(25).bmp",
-	"Pic\\\\OpeningPage\\\\(26).bmp",
-	"Pic\\\\OpeningPage\\\\(27).bmp",
-	"Pic\\\\OpeningPage\\\\(28).bmp",
-	"Pic\\\\OpeningPage\\\\(29).bmp",
-	"Pic\\\\OpeningPage\\\\(30).bmp",
-	"Pic\\\\OpeningPage\\\\(31).bmp",
-	"Pic\\\\OpeningPage\\\\(32).bmp",
-	"Pic\\\\OpeningPage\\\\(33).bmp",
-	"Pic\\\\OpeningPage\\\\(34).bmp",
-	"Pic\\\\OpeningPage\\\\(35).bmp",
-	"Pic\\\\OpeningPage\\\\(36).bmp",
-	"Pic\\\\OpeningPage\\\\(37).bmp",
-	"Pic\\\\OpeningPage\\\\(38).bmp",
-	"Pic\\\\OpeningPage\\\\(39).bmp",
-	"Pic\\\\OpeningPage\\\\(40).bmp",
-	"Pic\\\\OpeningPage\\\\(41).bmp"
+char Music[10][70]= {
+	
+	"music\\\\cold.wav",
+	"music\\\\Ltheme.wav"
 };
+
+char Opening[50][50] = {
+	"Pic\\\\OpeningPage\\\\ (1).bmp",
+	"Pic\\\\OpeningPage\\\\ (2).bmp",
+	"Pic\\\\OpeningPage\\\\ (3).bmp",
+	"Pic\\\\OpeningPage\\\\ (4).bmp",
+	"Pic\\\\OpeningPage\\\\ (5).bmp",
+	"Pic\\\\OpeningPage\\\\ (6).bmp",
+	"Pic\\\\OpeningPage\\\\ (7).bmp",
+	"Pic\\\\OpeningPage\\\\ (8).bmp",
+	"Pic\\\\OpeningPage\\\\ (9).bmp",
+	"Pic\\\\OpeningPage\\\\ (10).bmp",
+	"Pic\\\\OpeningPage\\\\ (11).bmp",
+	"Pic\\\\OpeningPage\\\\ (12).bmp",
+	"Pic\\\\OpeningPage\\\\ (13).bmp",
+	"Pic\\\\OpeningPage\\\\ (14).bmp",
+	"Pic\\\\OpeningPage\\\\ (15).bmp",
+	"Pic\\\\OpeningPage\\\\ (16).bmp",
+	"Pic\\\\OpeningPage\\\\ (17).bmp",
+	"Pic\\\\OpeningPage\\\\ (18).bmp",
+	"Pic\\\\OpeningPage\\\\ (19).bmp",
+	"Pic\\\\OpeningPage\\\\ (20).bmp",
+	"Pic\\\\OpeningPage\\\\ (21).bmp",
+	"Pic\\\\OpeningPage\\\\ (22).bmp",
+	"Pic\\\\OpeningPage\\\\ (23).bmp",
+	"Pic\\\\OpeningPage\\\\ (24).bmp",
+	"Pic\\\\OpeningPage\\\\ (25).bmp",
+	"Pic\\\\OpeningPage\\\\ (26).bmp",
+	"Pic\\\\OpeningPage\\\\ (27).bmp",
+	"Pic\\\\OpeningPage\\\\ (28).bmp",
+	"Pic\\\\OpeningPage\\\\ (29).bmp",
+	"Pic\\\\OpeningPage\\\\ (30).bmp",
+	"Pic\\\\OpeningPage\\\\ (31).bmp",
+	"Pic\\\\OpeningPage\\\\ (32).bmp",
+	"Pic\\\\OpeningPage\\\\ (33).bmp",
+	"Pic\\\\OpeningPage\\\\ (34).bmp",
+	"Pic\\\\OpeningPage\\\\ (35).bmp",
+	"Pic\\\\OpeningPage\\\\ (36).bmp",
+	"Pic\\\\OpeningPage\\\\ (37).bmp",
+	"Pic\\\\OpeningPage\\\\ (38).bmp",
+	"Pic\\\\OpeningPage\\\\ (39).bmp",
+	"Pic\\\\OpeningPage\\\\ (40).bmp",
+	"Pic\\\\OpeningPage\\\\ (41).bmp",
+	"Pic\\\\OpeningPage\\\\ (42).bmp",
+	"Pic\\\\OpeningPage\\\\ (43).bmp",
+	"Pic\\\\OpeningPage\\\\ (44).bmp",
+	"Pic\\\\OpeningPage\\\\ (45).bmp",
+	"Pic\\\\OpeningPage\\\\ (46).bmp"
+};
+int openingpageindex = 0;
+int openingpageindex_loop = 1;
+
+char Starting[70][70] = {
+	"Pic\\\\StartingPage\\\\ (1).bmp",
+	"Pic\\\\StartingPage\\\\ (2).bmp",
+	"Pic\\\\StartingPage\\\\ (3).bmp",
+	"Pic\\\\StartingPage\\\\ (4).bmp",
+	"Pic\\\\StartingPage\\\\ (5).bmp",
+	"Pic\\\\StartingPage\\\\ (6).bmp",
+	"Pic\\\\StartingPage\\\\ (7).bmp",
+	"Pic\\\\StartingPage\\\\ (8).bmp",
+	"Pic\\\\StartingPage\\\\ (9).bmp",
+	"Pic\\\\StartingPage\\\\ (10).bmp",
+	"Pic\\\\StartingPage\\\\ (11).bmp",
+	"Pic\\\\StartingPage\\\\ (12).bmp",
+	"Pic\\\\StartingPage\\\\ (13).bmp",
+	"Pic\\\\StartingPage\\\\ (14).bmp",
+	"Pic\\\\StartingPage\\\\ (15).bmp",
+	"Pic\\\\StartingPage\\\\ (16).bmp",
+	"Pic\\\\StartingPage\\\\ (17).bmp",
+	"Pic\\\\StartingPage\\\\ (18).bmp",
+	"Pic\\\\StartingPage\\\\ (19).bmp",
+	"Pic\\\\StartingPage\\\\ (20).bmp",
+	"Pic\\\\StartingPage\\\\ (21).bmp",
+	"Pic\\\\StartingPage\\\\ (22).bmp",
+	"Pic\\\\StartingPage\\\\ (23).bmp",
+	"Pic\\\\StartingPage\\\\ (24).bmp",
+	"Pic\\\\StartingPage\\\\ (25).bmp",
+	"Pic\\\\StartingPage\\\\ (26).bmp",
+	"Pic\\\\StartingPage\\\\ (27).bmp",
+	"Pic\\\\StartingPage\\\\ (28).bmp",
+	"Pic\\\\StartingPage\\\\ (29).bmp",
+	"Pic\\\\StartingPage\\\\ (30).bmp",
+	"Pic\\\\StartingPage\\\\ (31).bmp",
+	"Pic\\\\StartingPage\\\\ (32).bmp",
+	"Pic\\\\StartingPage\\\\ (33).bmp",
+	"Pic\\\\StartingPage\\\\ (34).bmp",
+	"Pic\\\\StartingPage\\\\ (35).bmp",
+	"Pic\\\\StartingPage\\\\ (36).bmp",
+	"Pic\\\\StartingPage\\\\ (37).bmp",
+	"Pic\\\\StartingPage\\\\ (38).bmp",
+	"Pic\\\\StartingPage\\\\ (39).bmp",
+	"Pic\\\\StartingPage\\\\ (40).bmp",
+	"Pic\\\\StartingPage\\\\ (41).bmp",
+	"Pic\\\\StartingPage\\\\ (42).bmp",
+	"Pic\\\\StartingPage\\\\ (43).bmp",
+	"Pic\\\\StartingPage\\\\ (44).bmp",
+	"Pic\\\\StartingPage\\\\ (45).bmp",
+	"Pic\\\\StartingPage\\\\ (46).bmp",
+	"Pic\\\\StartingPage\\\\ (47).bmp",
+	"Pic\\\\StartingPage\\\\ (48).bmp",
+	"Pic\\\\StartingPage\\\\ (49).bmp",
+	"Pic\\\\StartingPage\\\\ (50).bmp",
+	"Pic\\\\StartingPage\\\\ (51).bmp",
+	"Pic\\\\StartingPage\\\\ (52).bmp",
+	"Pic\\\\StartingPage\\\\ (53).bmp",
+	"Pic\\\\StartingPage\\\\ (54).bmp",
+	"Pic\\\\StartingPage\\\\ (55).bmp",
+	"Pic\\\\StartingPage\\\\ (56).bmp",
+	"Pic\\\\StartingPage\\\\ (57).bmp",
+	"Pic\\\\StartingPage\\\\ (58).bmp",
+	"Pic\\\\StartingPage\\\\ (59).bmp",
+	"Pic\\\\StartingPage\\\\ (60).bmp",
+	"Pic\\\\StartingPage\\\\ (61).bmp",
+	"Pic\\\\StartingPage\\\\ (62).bmp",
+	"Pic\\\\StartingPage\\\\ (63).bmp",
+	"Pic\\\\StartingPage\\\\ (64).bmp",
+	"Pic\\\\StartingPage\\\\ (65).bmp",
+	"Pic\\\\StartingPage\\\\ (66).bmp"
+};
+int startingpageindex = 0;
+int startingpageindex_loop = 1;
+
+char Nameinput[70][70] = {
+	"Pic\\\\NameInput\\\\ (1).bmp",
+	"Pic\\\\NameInput\\\\ (2).bmp",
+	"Pic\\\\NameInput\\\\ (3).bmp",
+	"Pic\\\\NameInput\\\\ (4).bmp",
+	"Pic\\\\NameInput\\\\ (5).bmp",
+	"Pic\\\\NameInput\\\\ (6).bmp",
+	"Pic\\\\NameInput\\\\ (7).bmp",
+	"Pic\\\\NameInput\\\\ (8).bmp",
+	"Pic\\\\NameInput\\\\ (9).bmp",
+	"Pic\\\\NameInput\\\\ (10).bmp",
+	"Pic\\\\NameInput\\\\ (11).bmp",
+	"Pic\\\\NameInput\\\\ (12).bmp",
+	"Pic\\\\NameInput\\\\ (13).bmp",
+	"Pic\\\\NameInput\\\\ (14).bmp",
+	"Pic\\\\NameInput\\\\ (15).bmp",
+	"Pic\\\\NameInput\\\\ (16).bmp",
+	"Pic\\\\NameInput\\\\ (17).bmp",
+	"Pic\\\\NameInput\\\\ (18).bmp",
+	"Pic\\\\NameInput\\\\ (19).bmp",
+	"Pic\\\\NameInput\\\\ (20).bmp",
+	"Pic\\\\NameInput\\\\ (21).bmp",
+	"Pic\\\\NameInput\\\\ (22).bmp",
+	"Pic\\\\NameInput\\\\ (23).bmp",
+	"Pic\\\\NameInput\\\\ (24).bmp",
+	"Pic\\\\NameInput\\\\ (25).bmp",
+	"Pic\\\\NameInput\\\\ (26).bmp",
+	"Pic\\\\NameInput\\\\ (27).bmp",
+	"Pic\\\\NameInput\\\\ (28).bmp",
+	"Pic\\\\NameInput\\\\ (29).bmp",
+	"Pic\\\\NameInput\\\\ (30).bmp",
+	"Pic\\\\NameInput\\\\ (31).bmp",
+	"Pic\\\\NameInput\\\\ (32).bmp",
+	"Pic\\\\NameInput\\\\ (33).bmp",
+	"Pic\\\\NameInput\\\\ (34).bmp",
+	"Pic\\\\NameInput\\\\ (35).bmp",
+	"Pic\\\\NameInput\\\\ (36).bmp",
+	"Pic\\\\NameInput\\\\ (37).bmp",
+	"Pic\\\\NameInput\\\\ (38).bmp",
+	"Pic\\\\NameInput\\\\ (39).bmp",
+	"Pic\\\\NameInput\\\\ (40).bmp",
+	"Pic\\\\NameInput\\\\ (41).bmp",
+	"Pic\\\\NameInput\\\\ (42).bmp",
+	"Pic\\\\NameInput\\\\ (43).bmp",
+	"Pic\\\\NameInput\\\\ (44).bmp",
+	"Pic\\\\NameInput\\\\ (45).bmp",
+	"Pic\\\\NameInput\\\\ (46).bmp",
+	"Pic\\\\NameInput\\\\ (47).bmp",
+	"Pic\\\\NameInput\\\\ (48).bmp",
+	"Pic\\\\NameInput\\\\ (49).bmp",
+	"Pic\\\\NameInput\\\\ (50).bmp",
+	"Pic\\\\NameInput\\\\ (51).bmp",
+	"Pic\\\\NameInput\\\\ (52).bmp",
+	"Pic\\\\NameInput\\\\ (53).bmp",
+	"Pic\\\\NameInput\\\\ (54).bmp",
+	"Pic\\\\NameInput\\\\ (55).bmp",
+	"Pic\\\\NameInput\\\\ (56).bmp",
+	"Pic\\\\NameInput\\\\ (57).bmp",
+	"Pic\\\\NameInput\\\\ (58).bmp",
+	"Pic\\\\NameInput\\\\ (59).bmp",
+	"Pic\\\\NameInput\\\\ (60).bmp",
+	"Pic\\\\NameInput\\\\ (61).bmp",
+	"Pic\\\\NameInput\\\\ (62).bmp",
+	"Pic\\\\NameInput\\\\ (63).bmp",
+	"Pic\\\\NameInput\\\\ (64).bmp",
+	"Pic\\\\NameInput\\\\ (65).bmp",
+};
+int nameinputindex = 0;
+int nameinputindex_loop = 1;
 
 char path[30][50] = {
 	"Pic\\\\Pieces\\\\white-king.bmp",
@@ -490,6 +647,13 @@ void iDraw() {
 	if(page == 0){
 		iShowBMP(0,0,Opening[openingpageindex]);
 	}
+	if(page == 1){
+		iShowBMP(0,0,Starting[startingpageindex]);
+		//iShowBMP2(0,0,"Pic\\\\StartingPage\\\\Extra.bmp",0);
+	}
+	if(page == 5){
+		iShowBMP(0,0,Nameinput[nameinputindex]);
+	}
 	if(page == 3) {
 		if(turn == 'W') {
 			iShowBMP(150,100,"Pic\\\\page2_black.bmp");
@@ -617,14 +781,29 @@ void iMouse(int button, int state, int mx, int my) {
 
 void iKeyboard(unsigned char key) {
 	if (key == ' ') {
-		init();
-		page = 2;
+		if(page == 0) page = 1;
+		else if(page == 1) page = 5;
+		else if(page == 5) {
+			init();
+			page = 2;
+			musicOn = false;
+			PlaySound(0,0,0);
+		}
 	}
 	if(key == 'b'){
 		Board_index++;
 		if(Board_index >= 7) Board_index = 0;
 	}
-	//place your codes for other keys here
+	if(key == 'p'){
+		if(musicOn){
+			musicOn = false;
+			PlaySound(0,0,0);
+		}
+		else if(!musicOn){
+			musicOn = true;
+			PlaySound(Music[0], NULL, SND_LOOP | SND_ASYNC);
+		}
+	}
 }
 
 void iSpecialKeyboard(unsigned char key) {
@@ -636,18 +815,38 @@ void iSpecialKeyboard(unsigned char key) {
 }
 
 void func(){
-	if(openingpageindex == 40) {
-		openingpageindex = 0;
-		return;
+	if(openingpageindex >= 45) {
+		openingpageindex_loop = -1;
 	}
-	openingpageindex++;
+	else if(openingpageindex <= 0){
+		openingpageindex_loop = 1;
+	}
+	openingpageindex += openingpageindex_loop;
+
+	if(startingpageindex >= 65) {
+		startingpageindex_loop = -1;
+	}
+	else if(startingpageindex <= 0){
+		startingpageindex_loop = 1;
+	}
+	startingpageindex += startingpageindex_loop;
+
+	if(nameinputindex >= 64) {
+		nameinputindex_loop = -1;
+	}
+	else if(nameinputindex <= 0){
+		nameinputindex_loop = 1;
+	}
+	nameinputindex += nameinputindex_loop;
 }
 
 int main() {
 	init();
 	copy_board();
-	
-	int t = iSetTimer(50, func);
+	if(musicOn){
+		PlaySound(Music[0], NULL, SND_LOOP | SND_ASYNC);
+	}
+	int t = iSetTimer(20, func);
 	iInitialize(700,700,"Chess Game");
 	return 0;
 }
