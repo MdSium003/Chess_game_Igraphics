@@ -18,14 +18,18 @@ int selectedX,selectedY;
 bool selected = false;
 bool castling[4] = {true, true, true, true};
 bool musicOn = true;
+char player1[50] = "(Optional)";
+int player1_index = 10;
+char player2[50] = "(Optional)";
+int player2_index = 10;
+int name_selected = 0;
 
 int white_x, white_y, black_x, black_y;
 int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
 
 char Music[10][70]= {
-	
-	"music\\\\cold.wav",
-	"music\\\\Ltheme.wav"
+	"music\\\\Ltheme.wav",
+	"music\\\\cold.wav"
 };
 
 char Opening[50][50] = {
@@ -653,6 +657,10 @@ void iDraw() {
 	}
 	if(page == 5){
 		iShowBMP(0,0,Nameinput[nameinputindex]);
+		iShowBMP2(0,572,"Pic\\\\NameInput\\\\back.bmp",0);
+		iSetColor(0,0,0);
+		iText(117,412,player1,GLUT_BITMAP_HELVETICA_18);
+		iText(117,334,player2,GLUT_BITMAP_HELVETICA_18);
 	}
 	if(page == 3) {
 		if(turn == 'W') {
@@ -666,6 +674,12 @@ void iDraw() {
 		if(turn == 'W') iShowBMP(50,98,"Pic\\\\Black_won.bmp");
 		else iShowBMP(50,98,"Pic\\\\White_won.bmp");
 	}
+	if(page == 6){
+		iShowBMP(0,0,"Pic\\\\StartingPage\\\\instructions.bmp");
+	}
+	if(page == 7){
+		iShowBMP(0,0,"Pic\\\\StartingPage\\\\Credits.bmp");
+	}
 }
 
 void iMouseMove(int mx, int my) {
@@ -675,9 +689,10 @@ void iMouseMove(int mx, int my) {
 void iMouse(int button, int state, int mx, int my) {
 	int movex = (mx>=52 && mx<=652)?((mx-52)/75)+1:0;
 	int movey = (my>=52 && my<=652)?((my-52)/75)+1:0;
+	count++;
 	//printf("%d %d\n", movex, movey);
 	if(page == 0) return;
-	else if(page == 3) {
+	else if(page == 3 && count%2==0) {
 		mx -= 150;
 		my -= 100;
 		if(mx>7 && mx<200){
@@ -702,8 +717,57 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		return;
 	}
-
-	count++;
+	else if(page == 1 && count%2==0) {
+		if(mx>=93){
+			if(my>=250 && my<=300 && mx<=370){
+				page = 7;
+			}
+			else if(my>=322 && my<=378 && mx<=430){
+				page = 6;
+			}
+			else if(my>=403 && my<= 456 && mx<=398){
+				page = 5;
+			}
+		}
+		return;
+	}
+	else if(page == 6 && count%2==0){
+		if(mx>=26 && mx<=192 && my<=683 && my>=613){
+			page = 1;
+		}
+		return;
+	}
+	else if(page == 7 && count%2==0){
+		if(mx>=26 && mx<=192 && my<=683 && my>=613){
+			page = 1;
+		}
+		return;
+	}
+	else if(page == 5 && count%2==0){
+		if(mx>=26 && mx<=192 && my<=683 && my>=613){
+			page = 1;
+		}
+		else if(mx>=99 && mx<=420){
+			if(my >=402 && my<= 436){
+				name_selected = 1;
+				if(player1[0] == '('){
+					player1_index = 0;
+					player1[player1_index] = '\0';
+				}
+			}
+			else if(my>=323 && my<=356){
+				name_selected = -1;
+				if(player2[0] == '('){
+					player2_index = 0;
+					player2[player2_index] = '\0';
+				}
+			}
+			else name_selected = 0;
+		}
+		else name_selected = 0;
+		return;
+	}
+	
 	if (button == GLUT_LEFT_BUTTON && movex<9 && movex>0 && movey<9 && movey>0) {
 		
 		if(((turn == 'W' && board[movey][movex]>0) || (turn == 'B' && board[movey][movex]<0)) && count%2 == 0){
@@ -780,21 +844,54 @@ void iMouse(int button, int state, int mx, int my) {
 }
 
 void iKeyboard(unsigned char key) {
-	if (key == ' ') {
-		if(page == 0) page = 1;
-		else if(page == 1) page = 5;
-		else if(page == 5) {
+	if (key == ' ' && page == 0) {
+		page = 1;
+	}
+	else if(page == 5 && key == 13) {
+		if(name_selected == 1){
+			name_selected = -1;
+			if(player2[0] == '('){
+				player2_index = 0;
+				player2[player2_index] = '\0';
+			}
+		}
+		else {
 			init();
 			page = 2;
 			musicOn = false;
 			PlaySound(0,0,0);
 		}
 	}
-	if(key == 'b'){
+	else if(page == 5 && name_selected){
+		if(!((key>='a' && key<='z') || (key>='A' && key<='Z') || key == ' ' || key == 8 || key == '.')) return;
+		if(name_selected == 1 && key != 8 && player1_index<=25){
+			if(player1[player1_index-1] == ' ' && key == ' ') return;
+			player1[player1_index] = key;
+			player1_index++;
+			player1[player1_index] = '\0';
+		}
+		else if(name_selected == 1 && key == 8){
+			if(player1_index == 0) return;
+			player1_index--;
+			player1[player1_index] = '\0';
+		}
+		else if(name_selected == -1 && key != 8 && player2_index<=25){
+			if(player2[player2_index-1] == ' ' && key == ' ') return;
+			player2[player2_index] = key;
+			player2_index++;
+			player2[player2_index] = '\0';
+		}
+		else if(name_selected == -1 && key == 8){
+			if(player2_index == 0) return;
+			player2_index--;
+			player2[player2_index] = '\0';
+		}
+	}
+	else if(key == 'b'){
 		Board_index++;
 		if(Board_index >= 7) Board_index = 0;
 	}
-	if(key == 'p'){
+	else if(key == 'p' || key == 'P'){
 		if(musicOn){
 			musicOn = false;
 			PlaySound(0,0,0);
@@ -846,7 +943,7 @@ int main() {
 	if(musicOn){
 		PlaySound(Music[0], NULL, SND_LOOP | SND_ASYNC);
 	}
-	int t = iSetTimer(20, func);
+	int t = iSetTimer(50, func);
 	iInitialize(700,700,"Chess Game");
 	return 0;
 }
