@@ -17,7 +17,7 @@ int count = 0;
 int selectedX,selectedY;
 bool selected = false;
 bool castling[4] = {true, true, true, true};
-bool musicOn = true;
+int musicOn = 1;
 char player1[50] = "(Optional)";
 int player1_index = 10;
 char player2[50] = "(Optional)";
@@ -27,10 +27,162 @@ int name_selected = 0;
 int white_x, white_y, black_x, black_y;
 int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
 
+int minute[2] = {0,0}, second[2] = {0,0};
+bool time_start = false;
+int turn_time = 1;
+int additonal = 0;
+
 char Music[10][70]= {
 	"music\\\\Ltheme.wav",
 	"music\\\\cold.wav"
 };
+int musicindex = 0;
+char additonal_sounds[50][50];
+
+char Mode[50][50] = {
+	"Pic\\\\Mode\\\\ (1).bmp",
+	"Pic\\\\Mode\\\\ (2).bmp",
+	"Pic\\\\Mode\\\\ (3).bmp",
+	"Pic\\\\Mode\\\\ (4).bmp",
+	"Pic\\\\Mode\\\\ (5).bmp",
+	"Pic\\\\Mode\\\\ (6).bmp",
+	"Pic\\\\Mode\\\\ (7).bmp",
+	"Pic\\\\Mode\\\\ (8).bmp",
+	"Pic\\\\Mode\\\\ (9).bmp",
+	"Pic\\\\Mode\\\\ (10).bmp",
+	"Pic\\\\Mode\\\\ (11).bmp",
+	"Pic\\\\Mode\\\\ (12).bmp",
+	"Pic\\\\Mode\\\\ (13).bmp",
+	"Pic\\\\Mode\\\\ (14).bmp",
+	"Pic\\\\Mode\\\\ (15).bmp",
+	"Pic\\\\Mode\\\\ (16).bmp",
+	"Pic\\\\Mode\\\\ (17).bmp",
+	"Pic\\\\Mode\\\\ (18).bmp",
+	"Pic\\\\Mode\\\\ (19).bmp",
+	"Pic\\\\Mode\\\\ (20).bmp",
+	"Pic\\\\Mode\\\\ (21).bmp",
+	"Pic\\\\Mode\\\\ (22).bmp",
+	"Pic\\\\Mode\\\\ (23).bmp",
+	"Pic\\\\Mode\\\\ (24).bmp",
+	"Pic\\\\Mode\\\\ (25).bmp",
+	"Pic\\\\Mode\\\\ (26).bmp",
+	"Pic\\\\Mode\\\\ (27).bmp",
+	"Pic\\\\Mode\\\\ (28).bmp",
+	"Pic\\\\Mode\\\\ (29).bmp",
+	"Pic\\\\Mode\\\\ (30).bmp",
+	"Pic\\\\Mode\\\\ (31).bmp",
+	"Pic\\\\Mode\\\\ (32).bmp",
+	"Pic\\\\Mode\\\\ (33).bmp",
+	"Pic\\\\Mode\\\\ (34).bmp",
+	"Pic\\\\Mode\\\\ (35).bmp",
+	"Pic\\\\Mode\\\\ (36).bmp",
+	"Pic\\\\Mode\\\\ (37).bmp",
+	"Pic\\\\Mode\\\\ (38).bmp",
+	"Pic\\\\Mode\\\\ (39).bmp",
+	"Pic\\\\Mode\\\\ (40).bmp",
+	"Pic\\\\Mode\\\\ (41).bmp",
+	"Pic\\\\Mode\\\\ (42).bmp",
+	"Pic\\\\Mode\\\\ (43).bmp",
+	"Pic\\\\Mode\\\\ (44).bmp",
+	"Pic\\\\Mode\\\\ (45).bmp",
+	"Pic\\\\Mode\\\\ (46).bmp"
+};
+int modeindex = 0;
+int mode_loop = 1;
+
+int modeselect = 1;
+void modeselected(){
+	if(modeselect == 1) {
+		minute[0] = 0;
+		second[0] = 0;
+		minute[1] = 0;
+		second[1] = 0;
+		additonal = 0;
+	}
+	else if(modeselect == 2){
+		minute[0] = 1;
+		second[0] = 0;
+		minute[1] = 1;
+		second[1] = 0;
+		additonal = 0;
+	}
+	else if(modeselect == 3){
+		minute[0] = 2;
+		second[0] = 0;
+		minute[1] = 2;
+		second[1] = 0;
+		additonal = 1;
+	}
+	else if(modeselect == 4){
+		minute[0] = 3;
+		second[0] = 0;
+		minute[1] = 3;
+		second[1] = 0;
+		additonal = 2;
+	}
+	else if(modeselect == 5){
+		minute[0] = 5;
+		second[0] = 0;
+		minute[1] = 5;
+		second[1] = 0;
+		additonal = 0;
+	}
+	else if(modeselect == 6){
+		minute[0] = 10;
+		second[0] = 0;
+		minute[1] = 10;
+		second[1] = 0;
+		additonal = 0;
+	}
+	else if(modeselect == 7){
+		minute[0] = 15;
+		second[0] = 0;
+		minute[1] = 15;
+		second[1] = 0;
+		additonal = 10;
+	}
+	else if(modeselect == 8){
+		minute[0] = 30;
+		second[0] = 0;
+		minute[1] = 30;
+		second[1] = 0;
+		additonal = 0;
+	}
+}
+
+char Win[50][50] = {
+	"Pic\\\\Win\\\\ (1).bmp",
+	"Pic\\\\Win\\\\ (2).bmp",
+	"Pic\\\\Win\\\\ (3).bmp",
+	"Pic\\\\Win\\\\ (4).bmp",
+	"Pic\\\\Win\\\\ (5).bmp",
+	"Pic\\\\Win\\\\ (6).bmp",
+	"Pic\\\\Win\\\\ (7).bmp",
+	"Pic\\\\Win\\\\ (8).bmp",
+	"Pic\\\\Win\\\\ (9).bmp",
+	"Pic\\\\Win\\\\ (10).bmp",
+	"Pic\\\\Win\\\\ (11).bmp",
+	"Pic\\\\Win\\\\ (12).bmp",
+	"Pic\\\\Win\\\\ (13).bmp",
+	"Pic\\\\Win\\\\ (14).bmp",
+	"Pic\\\\Win\\\\ (15).bmp",
+	"Pic\\\\Win\\\\ (16).bmp",
+	"Pic\\\\Win\\\\ (17).bmp",
+	"Pic\\\\Win\\\\ (18).bmp",
+	"Pic\\\\Win\\\\ (19).bmp",
+	"Pic\\\\Win\\\\ (20).bmp",
+	"Pic\\\\Win\\\\ (21).bmp",
+	"Pic\\\\Win\\\\ (22).bmp",
+	"Pic\\\\Win\\\\ (23).bmp",
+	"Pic\\\\Win\\\\ (24).bmp",
+	"Pic\\\\Win\\\\ (25).bmp",
+	"Pic\\\\Win\\\\ (26).bmp",
+	"Pic\\\\Win\\\\ (27).bmp",
+	"Pic\\\\Win\\\\ (28).bmp",
+	"Pic\\\\Win\\\\ (29).bmp",
+	"Pic\\\\Win\\\\ (30).bmp"
+};
+int winingindex = 0;
 
 char Opening[50][50] = {
 	"Pic\\\\OpeningPage\\\\ (1).bmp",
@@ -256,11 +408,17 @@ char BoardPic[30][50] = {
 	"Pic\\\\ChessBoard\\\\Chess2.bmp",
 	"Pic\\\\ChessBoard\\\\Chess3.bmp",
 	"Pic\\\\ChessBoard\\\\Chess4.bmp",
-	"Pic\\\\ChessBoard\\\\Chess5.bmp",
-	"Pic\\\\ChessBoard\\\\Chess6.bmp",
-	"Pic\\\\ChessBoard\\\\Chess7.bmp"
+	"Pic\\\\ChessBoard\\\\Chess5.bmp"
 };
 int Board_index = 0;
+
+char Buttons[30][50] = {
+	"Pic\\\\Buttonoff.bmp",
+	"Pic\\\\Buttonon.bmp",
+	"Pic\\\\ingamebuttonoff.bmp",
+	"Pic\\\\ingamebuttonon.bmp"
+
+};
 
 struct Piece
 {
@@ -289,6 +447,8 @@ void init(){
 	moveable_index = 0;
 	eliminate_index = 0;
 	temp_eliminate_index = 0;
+	white_x = 5, white_y = 1, black_x = 5, black_y = 8;
+	selected = false;
 	int arr[8] = {1,-1,-1,1,1,-1,0,0};
 	int arr2[8] = {1,-1,1,-1,0,0,1,-1};
 	types[1] = Piece('K',1,8,arr,arr2,1);
@@ -329,7 +489,6 @@ void init(){
 		board[i][0] = board[i][9] = 99;
 	}
 	board[0][0] = board[9][9] = board[0][9] = board[9][0] = 99;
-	white_x = 5, white_y = 1, black_x = 5, black_y = 8;
 }
 
 void GetCoordinates(int x, int y);
@@ -648,21 +807,53 @@ void iDraw() {
 			iShowBMP2(cirx,ciry,path[(((p*-1)-1)*4)+3],0);
 		}
 	}
+	iShowBMP2(695,5,"Pic\\\\textbox.bmp",0);
+	iShowBMP2(695,605,"Pic\\\\textbox.bmp",0);
+	iText(710,50,player1,GLUT_BITMAP_HELVETICA_18);
+	iText(710,650,player2,GLUT_BITMAP_HELVETICA_18);
+	char str[6];
+	str[0] = '1' -1+(minute[0]/10);
+	str[1] = '1' -1+(minute[0]%10);
+	str[2] = ':';
+	str[3] = '1' -1+(second[0]/10);
+	str[4] = '1' -1+(second[0]%10);
+	str[5] = '\0';
+	iText(770,613,str,GLUT_BITMAP_TIMES_ROMAN_24);
+	char str2[6];
+	str2[0] = '1' -1+(minute[1]/10);
+	str2[1] = '1' -1+(minute[1]%10);
+	str2[2] = ':';
+	str2[3] = '1' -1+(second[1]/10);
+	str2[4] = '1' -1+(second[1]%10);
+	str2[5] = '\0';
+	iText(770,85,str2,GLUT_BITMAP_TIMES_ROMAN_24);
+	iShowBMP2(690,0,Buttons[musicOn+2],254);
 	if(page == 0){
 		iShowBMP(0,0,Opening[openingpageindex]);
+		iShowBMP(670,0,"Pic\\\\extra4.bmp");
 	}
-	if(page == 1){
+	else if(page == 1){
 		iShowBMP(0,0,Starting[startingpageindex]);
-		//iShowBMP2(0,0,"Pic\\\\StartingPage\\\\Extra.bmp",0);
+		iShowBMP(670,0,"Pic\\\\extra2.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
 	}
-	if(page == 5){
+	else if(page == 8){
+		iShowBMP(0,0,Mode[modeindex]);
+		iShowBMP2(670,0,"Pic\\\\extra5.bmp",0);
+		iShowBMP(700,192,"Pic\\\\extra6.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
+	}
+	else if(page == 5){
 		iShowBMP(0,0,Nameinput[nameinputindex]);
 		iShowBMP2(0,572,"Pic\\\\NameInput\\\\back.bmp",0);
 		iSetColor(0,0,0);
-		iText(117,412,player1,GLUT_BITMAP_HELVETICA_18);
+		iText(117,414,player1,GLUT_BITMAP_HELVETICA_18);
 		iText(117,334,player2,GLUT_BITMAP_HELVETICA_18);
+		iShowBMP(670,0,"Pic\\\\extra2.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
+		iShowBMP2(690,0,"Pic\\\\BUttonPage5.bmp",255);
 	}
-	if(page == 3) {
+	else if(page == 3) {
 		if(turn == 'W') {
 			iShowBMP(150,100,"Pic\\\\page2_black.bmp");
 		}
@@ -670,15 +861,22 @@ void iDraw() {
 			iShowBMP(150,100,"Pic\\\\page2_white.bmp");
 		}
 	}
-	if(page == 4) {
-		if(turn == 'W') iShowBMP(50,98,"Pic\\\\Black_won.bmp");
-		else iShowBMP(50,98,"Pic\\\\White_won.bmp");
+	else if(page == 4) {
+		iShowBMP(0,0,Win[winingindex]);
+		if(winingindex == 29) {
+			if(turn == 'W') iShowBMP(0,0,"Pic\\\\Win\\\\BLACK.bmp");
+			else iShowBMP(0,0,"Pic\\\\Win\\\\WHITE.bmp");
+		}
 	}
-	if(page == 6){
+	else if(page == 6){
 		iShowBMP(0,0,"Pic\\\\StartingPage\\\\instructions.bmp");
+		iShowBMP(670,0,"Pic\\\\extra3.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
 	}
-	if(page == 7){
+	else if(page == 7){
 		iShowBMP(0,0,"Pic\\\\StartingPage\\\\Credits.bmp");
+		iShowBMP(670,0,"Pic\\\\extra.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
 	}
 }
 
@@ -690,7 +888,7 @@ void iMouse(int button, int state, int mx, int my) {
 	int movex = (mx>=52 && mx<=652)?((mx-52)/75)+1:0;
 	int movey = (my>=52 && my<=652)?((my-52)/75)+1:0;
 	count++;
-	//printf("%d %d\n", movex, movey);
+	printf("%d %d\n", mx, my);
 	if(page == 0) return;
 	else if(page == 3 && count%2==0) {
 		mx -= 150;
@@ -717,7 +915,25 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		return;
 	}
-	else if(page == 1 && count%2==0) {
+	if((page == 1 || page == 5||page ==6 ||page == 7||page == 8) && count%2==0){
+		if(mx>=680+42 && mx<=680+158 && my>=405 && my<=520) {
+			if(musicOn){
+				musicOn = false;
+				PlaySound(0,0,0);
+			}
+			else {
+				musicOn = true;
+				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			}
+		}
+		if(mx>=680+42 && mx<=680+158 && my>=270 && my<=384) {
+			musicindex++;
+			if(musicindex>1) musicindex =0;
+			PlaySound(0,0,0);
+			PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+		}
+	}
+	if(page == 1 && count%2==0) {
 		if(mx>=93){
 			if(my>=250 && my<=300 && mx<=370){
 				page = 7;
@@ -743,6 +959,54 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		return;
 	}
+	else if(page == 4 && count%2==0){
+		return;
+	}
+	else if(page == 8 && count%2==0){
+		if(mx>=26 && mx<=192 && my<=683 && my>=613){
+			page = 5;
+			return;
+		}
+		else if(mx>=187 && mx<=329 && my<=553 && my>=513){
+			page = 2;
+			modeselect = 1;
+		}
+		else if(mx>=177 && mx<=319 && my<=484 && my>=444){
+			page = 2;
+			modeselect = 2;
+		}
+		else if(mx>=335 && mx<=478 && my<=484 && my>=444){
+			page = 2;
+			modeselect = 3;
+		}
+		else if(mx>=178 && mx<=320 && my<=412 && my>=371){
+			page = 2;
+			modeselect = 4;
+		}
+		else if(mx>=335 && mx<=478 && my<=412 && my>=371){
+			page = 2;
+			modeselect = 5;
+		}
+		else if(mx>=166 && mx<=308 && my<=334 && my>=294){
+			page = 2;
+			modeselect = 6;
+		}
+		else if(mx>=320 && mx<=463 && my<=334 && my>=294){
+			page = 2;
+			modeselect = 7;
+		}
+		else if(mx>=476 && mx<=616 && my<=334 && my>=294){
+			page = 2;
+			modeselect = 8;
+		}
+		if(page == 2){
+			init();
+			modeselected();
+			musicOn =false;
+			PlaySound(0,0,0);
+		}
+		return;
+	}
 	else if(page == 5 && count%2==0){
 		if(mx>=26 && mx<=192 && my<=683 && my>=613){
 			page = 1;
@@ -765,6 +1029,10 @@ void iMouse(int button, int state, int mx, int my) {
 			else name_selected = 0;
 		}
 		else name_selected = 0;
+		if(mx>=680+42 && mx<=680+158 && my>=123 && my<=243){
+			page = 8;
+			name_selected = 0;
+		}
 		return;
 	}
 	
@@ -796,6 +1064,12 @@ void iMouse(int button, int state, int mx, int my) {
 				board[movey][movex] = board[selectedY][selectedX];
 				board[selectedY][selectedX] = 0;
 				turn = (turn == 'W')?'B':'W';
+				if(second[turn_time]<(60-additonal)) second[turn_time] += additonal;
+				else{
+					minute[turn_time] +=1;
+					second[turn_time] = (second[turn_time]+additonal)-60;
+				}
+				turn_time = (turn == 'W')?1:0;
 				if(board[movey][movex] == 6 && movey == 8) {
 					page = 3;
 					selectedX = movex;
@@ -827,6 +1101,7 @@ void iMouse(int button, int state, int mx, int my) {
 						board[movey][8] = 0;
 					}
 				}
+				if(!time_start) time_start = true;
 			}
 			if(board[movey][movex] == 1) {
 				white_x = movex;
@@ -838,7 +1113,11 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 			moveable_index = 0;
 			eliminate_index = 0;
-			if(win_lose()) page = 4;
+			if(win_lose()) {
+				page = 4;
+				winingindex = 0;
+				time_start = false;
+			}
 		}
 	}
 }
@@ -857,14 +1136,15 @@ void iKeyboard(unsigned char key) {
 		}
 		else {
 			init();
-			page = 2;
-			musicOn = false;
-			PlaySound(0,0,0);
+			page = 8;
 		}
+	}
+	else if(page == 2 && key == 'm'){
+		page = 5;
 	}
 	else if(page == 5 && name_selected){
 		if(!((key>='a' && key<='z') || (key>='A' && key<='Z') || key == ' ' || key == 8 || key == '.')) return;
-		if(name_selected == 1 && key != 8 && player1_index<=25){
+		if(name_selected == 1 && key != 8 && player1_index<=12){
 			if(player1[player1_index-1] == ' ' && key == ' ') return;
 			player1[player1_index] = key;
 			player1_index++;
@@ -875,7 +1155,7 @@ void iKeyboard(unsigned char key) {
 			player1_index--;
 			player1[player1_index] = '\0';
 		}
-		else if(name_selected == -1 && key != 8 && player2_index<=25){
+		else if(name_selected == -1 && key != 8 && player2_index<=12){
 			if(player2[player2_index-1] == ' ' && key == ' ') return;
 			player2[player2_index] = key;
 			player2_index++;
@@ -889,7 +1169,7 @@ void iKeyboard(unsigned char key) {
 	}
 	else if(key == 'b'){
 		Board_index++;
-		if(Board_index >= 7) Board_index = 0;
+		if(Board_index >= 5) Board_index = 0;
 	}
 	else if(key == 'p' || key == 'P'){
 		if(musicOn){
@@ -920,7 +1200,7 @@ void func(){
 	}
 	openingpageindex += openingpageindex_loop;
 
-	if(startingpageindex >= 65) {
+	if(startingpageindex >= 45) {
 		startingpageindex_loop = -1;
 	}
 	else if(startingpageindex <= 0){
@@ -928,22 +1208,48 @@ void func(){
 	}
 	startingpageindex += startingpageindex_loop;
 
-	if(nameinputindex >= 64) {
+	if(nameinputindex >= 45) {
 		nameinputindex_loop = -1;
 	}
 	else if(nameinputindex <= 0){
 		nameinputindex_loop = 1;
 	}
 	nameinputindex += nameinputindex_loop;
+
+	if(modeindex >= 45) {
+		mode_loop = -1;
+	}
+	else if(modeindex <= 0){
+		mode_loop = 1;
+	}
+	modeindex += mode_loop;
+
+	if(winingindex < 29) winingindex++;
+}
+
+void time(){
+	if(time_start){
+		if(second[turn_time]>0) second[turn_time]--;
+		if(second[turn_time]<=0 && minute[turn_time]) {
+			minute[turn_time]--;
+			second[turn_time] = 59;
+		}
+		if(minute[turn_time] == 0 && second[turn_time] == 0){
+			page = 4;
+			winingindex = 0;
+			time_start = false;
+		} 
+	}
 }
 
 int main() {
 	init();
 	copy_board();
 	if(musicOn){
-		PlaySound(Music[0], NULL, SND_LOOP | SND_ASYNC);
+		PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
 	}
-	int t = iSetTimer(50, func);
-	iInitialize(700,700,"Chess Game");
+	int t = iSetTimer(15, func);
+	int t2 = iSetTimer(1000, time);
+	iInitialize(900,700,"Chess Game");
 	return 0;
 }
