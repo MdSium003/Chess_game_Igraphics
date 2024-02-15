@@ -3,29 +3,35 @@
 #include<mmsystem.h>
 #pragma comment(lib,"winmm.lib")
 
-char turn = 'W';
+/*
+2. Soundtracks
+3. White King and Both Queen BMP
+*/
+
 int page = 0;
+char turn = 'W';
 int board[10][10];
-int temp_board[10][10];
 int moveable[64][2];
 int moveable_index = 0;
 int eliminate[10][2];
 int eliminate_index = 0;
+int temp_board[10][10];
 int temp_eliminate[10][2];
 int temp_eliminate_index = 0;
 int count = 0;
+int white_x, white_y, black_x, black_y;
+int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
+bool check_red = false;
+
 int selectedX,selectedY;
 bool selected = false;
 bool castling[4] = {true, true, true, true};
-int musicOn = 1;
+
 char player1[50] = "(Optional)";
 int player1_index = 10;
 char player2[50] = "(Optional)";
 int player2_index = 10;
 int name_selected = 0;
-
-int white_x, white_y, black_x, black_y;
-int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
 
 int minute[2] = {0,0}, second[2] = {0,0};
 bool time_start = false;
@@ -38,6 +44,10 @@ char Music[10][70]= {
 };
 int musicindex = 0;
 char additonal_sounds[50][50];
+int musicOn = 1;
+
+int Undo[10][10][100];
+int undoindex = 0;
 
 char Mode[50][50] = {
 	"Pic\\\\Mode\\\\ (1).bmp",
@@ -441,7 +451,23 @@ struct Piece
 
 Piece types[7];
 
+void init();
+void copy_board();
+bool win_lose();
+void temp_eliminating(int x, int y);
+bool checksystem(int x, int y);
+void GetCoordinates(int x, int y);
+void func();
+void time();
+void namechange();
+bool Draw_game();
+void copy_undo();
+
 void init(){
+	copy_board();
+	modeselected();
+	time_start = false;
+	turn_time = 1;
 	turn = 'W';
 	castling[0] = castling[1] = castling[2] = castling[3] = true; 
 	moveable_index = 0;
@@ -489,9 +515,8 @@ void init(){
 		board[i][0] = board[i][9] = 99;
 	}
 	board[0][0] = board[9][9] = board[0][9] = board[9][0] = 99;
+	copy_undo();
 }
-
-void GetCoordinates(int x, int y);
 
 void copy_board(){
 	temp_white_x = white_x, temp_white_y = white_y, temp_black_x = black_x, temp_black_y = black_y;
@@ -500,6 +525,49 @@ void copy_board(){
 			temp_board[i][j] = board[i][j];
 		}
 	}
+}
+
+void namechange(){
+	if(player1[0] == '(' || player1[0] == '\0'){
+		player1[0] = 'P';
+		player1[1] = 'l';
+		player1[2] = 'a';
+		player1[3] = 'y';
+		player1[4] = 'e';
+		player1[5] = 'r';
+		player1[6] = ' ';
+		player1[7] = '1';
+		player1[8] = '\0';
+	}
+	if(player2[0] == '(' || player2[0] == '\0'){
+		player2[0] = 'P';
+		player2[1] = 'l';
+		player2[2] = 'a';
+		player2[3] = 'y';
+		player2[4] = 'e';
+		player2[5] = 'r';
+		player2[6] = ' ';
+		player2[7] = '2';
+		player2[8] = '\0';
+	}
+}
+
+void copy_undo(){
+	for(int i=0;i<10;i++){
+		for(int j=0;j<10;j++){
+			Undo[i][j][undoindex] = board[i][j];
+		}
+	}
+}
+
+bool Draw_game(){
+	for(int i=1;i<=8;i++){
+		for(int j=1;j<=8;j++){
+			if(board[i][j] != 1 && board[i][j]>0) return false;
+			if(board[i][j] != -1 && board[i][j]<0) return false;
+		}
+	}
+	return true;
 }
 
 bool win_lose(){
@@ -529,11 +597,11 @@ bool win_lose(){
 void temp_eliminating(int x, int y){
 	temp_eliminate_index = 0;
 	int p = (temp_board[y][x]>0)?temp_board[y][x]:-1*temp_board[y][x];
-	//printf("%d\n", p);
+	////printf("%d\n", p);
 	for(int i=0;i<types[p].dirsize;i++){
 		int movex = x;
 		int movey = y;
-		//printf("%d %d\n",movex,movey);
+		////printf("%d %d\n",movex,movey);
 		for(int j=0;j<types[p].moveCount;j++){
 			movex = movex + types[p].dirX[i];
 			if(temp_board[y][x] == -6) movey = movey - types[p].dirY[i];
@@ -545,13 +613,13 @@ void temp_eliminating(int x, int y){
 				if((movex+1)<9 && temp_board[movey][movex+1]*temp_board[y][x] < 0 ){
 					temp_eliminate[temp_eliminate_index][0] = movex+1;
 					temp_eliminate[temp_eliminate_index][1] = movey;
-					//printf("eli - %d %d\n", movex, movey);
+					////printf("eli - %d %d\n", movex, movey);
 					temp_eliminate_index++;
 				}
 				if((movex-1)>0 && temp_board[movey][movex-1]*temp_board[y][x] < 0){
 					temp_eliminate[temp_eliminate_index][0] = movex-1;
 					temp_eliminate[temp_eliminate_index][1] = movey;
-					//printf("eli - %d %d\n", movex, movey);
+					////printf("eli - %d %d\n", movex, movey);
 					temp_eliminate_index++;
 				}
 			}
@@ -560,7 +628,7 @@ void temp_eliminating(int x, int y){
 			else if(temp_board[movey][movex]*temp_board[y][x] < 0 && temp_board[y][x] != 6 && temp_board[y][x] != -6) {
 				temp_eliminate[temp_eliminate_index][0] = movex;
 				temp_eliminate[temp_eliminate_index][1] = movey;
-				printf("eli - %d %d\n", movex, movey);
+				//printf("eli - %d %d\n", movex, movey);
 				temp_eliminate_index++;
 				break;
 			}
@@ -572,17 +640,17 @@ void temp_eliminating(int x, int y){
 }
 
 bool checksystem(int x, int y){
-	printf("Position of King = %d - %d\n", y, x);
+	//printf("Position of King = %d - %d\n", y, x);
 	for(int i=1;i<=8;i++){
 		for(int j=1;j<=8;j++){
 			if(temp_board[j][i]*temp_board[y][x] < 0){
 				temp_eliminate_index = 0;
 				temp_eliminating(i,j);
 				for(int k=0;k<temp_eliminate_index;k++){
-					printf("Elimimate to %d = %d - %d\n", temp_board[j][i], temp_eliminate[k][0] , temp_eliminate[k][1]);
+					//printf("Elimimate to %d = %d - %d\n", temp_board[j][i], temp_eliminate[k][0] , temp_eliminate[k][1]);
 					if(temp_eliminate[k][0] == x && temp_eliminate[k][1] == y) return true;
 				}
-				printf("-----------------------------\n");
+				//printf("-----------------------------\n");
 			}
 		}
 	}
@@ -593,11 +661,11 @@ void GetCoordinates(int x, int y){
 	moveable_index = 0;
 	eliminate_index = 0;
 	int p = (board[y][x]>0)?board[y][x]:-1*board[y][x];
-	//printf("%d\n", p);
+	////printf("%d\n", p);
 	for(int i=0;i<types[p].dirsize;i++){
 		int movex = x;
 		int movey = y;
-		printf("%d %d\n",movex,movey);
+		//printf("%d %d\n",movex,movey);
 		for(int j=0;j<types[p].moveCount;j++){
 			movex = movex + types[p].dirX[i];
 			if(board[y][x] == -6) movey = movey - types[p].dirY[i];
@@ -609,7 +677,7 @@ void GetCoordinates(int x, int y){
 				if((movex+1)<9 && board[movey][movex+1]*board[y][x] < 0 ){
 					eliminate[eliminate_index][0] = movex+1;
 					eliminate[eliminate_index][1] = movey;
-					printf("eli - %d %d\n", movex, movey);
+					//printf("eli - %d %d\n", movex, movey);
 					eliminate_index++;
 
 					copy_board();
@@ -621,7 +689,7 @@ void GetCoordinates(int x, int y){
 				if((movex-1)>0 && board[movey][movex-1]*board[y][x] < 0){
 					eliminate[eliminate_index][0] = movex-1;
 					eliminate[eliminate_index][1] = movey;
-					printf("eli - %d %d\n", movex, movey);
+					//printf("eli - %d %d\n", movex, movey);
 					eliminate_index++;
 
 					copy_board();
@@ -649,7 +717,7 @@ void GetCoordinates(int x, int y){
 			else if(board[movey][movex]*board[y][x] < 0 && board[y][x] != 6 && board[y][x] != -6) {
 				eliminate[eliminate_index][0] = movex;
 				eliminate[eliminate_index][1] = movey;
-				printf("eli - %d %d\n", movex, movey);
+				//printf("eli - %d %d\n", movex, movey);
 				eliminate_index++;
 
 				copy_board();
@@ -676,7 +744,7 @@ void GetCoordinates(int x, int y){
 				while (ind > 1){
 					if (board[y][ind] != 0) {
 						temp_cas = false;
-						printf("murikha %d %d", y, ind);
+						//printf("murikha %d %d", y, ind);
 						break;
 					}
 					copy_board();
@@ -684,7 +752,7 @@ void GetCoordinates(int x, int y){
 					temp_board[y][x] = 0;
 					if (checksystem(ind, white_y)) {
 						temp_cas = false;
-						printf("muri khabi");
+						//printf("muri khabi");
 						break;
 					}
 					ind--;
@@ -694,7 +762,7 @@ void GetCoordinates(int x, int y){
 					moveable[moveable_index][1] = y;
 					moveable_index++;
 				}
-				printf("haha %d %d", moveable[moveable_index][0], moveable[moveable_index][1]);
+				//printf("haha %d %d", moveable[moveable_index][0], moveable[moveable_index][1]);
 			}
 			if (board[y][x] == 1 && castling[1]) {
 				int ind = x + 1;
@@ -725,7 +793,7 @@ void GetCoordinates(int x, int y){
 				while (ind > 1){
 					if (board[y][ind] != 0) {
 						temp_cas = false;
-						//printf("murikha %d %d", y, ind);
+						////printf("murikha %d %d", y, ind);
 						break;
 					}
 					copy_board();
@@ -733,7 +801,7 @@ void GetCoordinates(int x, int y){
 					temp_board[y][x] = 0;
 					if (checksystem(ind, black_y)) {
 						temp_cas = false;
-						//printf("muri khabi");
+						////printf("muri khabi");
 						break;
 					}
 					ind--;
@@ -779,12 +847,18 @@ void iDraw() {
 	for(i=1;i<=8;i++){
 		for(j=1;j<=8;j++){
 			int p = board[i][j];
-			//printf("%d\n", p);
+			////printf("%d\n", p);
 			if(p>0) {
-				iShowBMP2(x,y,path[((p-1)*4)+0],255);
+				if(check_red && board[i][j] == 1 && turn == 'W'){
+					iShowBMP2(x,y,path[2],0);
+				}
+				else iShowBMP2(x,y,path[((p-1)*4)+0],255);
 			}
 			else if(p<0) {
-				iShowBMP2(x,y,path[(((p*-1)-1)*4)+1],255);
+				if(check_red && board[i][j] == -1 && turn == 'B'){
+					iShowBMP2(x,y,path[3],0);
+				}
+				else iShowBMP2(x,y,path[(((p*-1)-1)*4)+1],255);
 			}
 			x += (75);
 		}
@@ -818,7 +892,6 @@ void iDraw() {
 	str[3] = '1' -1+(second[0]/10);
 	str[4] = '1' -1+(second[0]%10);
 	str[5] = '\0';
-	iText(770,613,str,GLUT_BITMAP_TIMES_ROMAN_24);
 	char str2[6];
 	str2[0] = '1' -1+(minute[1]/10);
 	str2[1] = '1' -1+(minute[1]%10);
@@ -826,8 +899,14 @@ void iDraw() {
 	str2[3] = '1' -1+(second[1]/10);
 	str2[4] = '1' -1+(second[1]%10);
 	str2[5] = '\0';
-	iText(770,85,str2,GLUT_BITMAP_TIMES_ROMAN_24);
-	iShowBMP2(690,0,Buttons[musicOn+2],254);
+	if(Board_index == 4) iSetColor(255,255,255);
+	if(modeselect != 1){
+		iText(770,613,str,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(770,85,str2,GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	iShowBMP2(695,0,Buttons[musicOn+2],255);
+	if(modeselect != 1) iShowBMP2(695,0,"Pic\\\\plusten.bmp",255);
+	iSetColor(0,0,0);
 	if(page == 0){
 		iShowBMP(0,0,Opening[openingpageindex]);
 		iShowBMP(670,0,"Pic\\\\extra4.bmp");
@@ -864,9 +943,18 @@ void iDraw() {
 	else if(page == 4) {
 		iShowBMP(0,0,Win[winingindex]);
 		if(winingindex == 29) {
-			if(turn == 'W') iShowBMP(0,0,"Pic\\\\Win\\\\BLACK.bmp");
-			else iShowBMP(0,0,"Pic\\\\Win\\\\WHITE.bmp");
+			if(turn == 'W') {
+				iShowBMP(0,0,"Pic\\\\Win\\\\BLACK.bmp");
+				iText(460,130,player2,GLUT_BITMAP_TIMES_ROMAN_24);
+			}
+			else {
+				iShowBMP(0,0,"Pic\\\\Win\\\\WHITE.bmp");
+				iText(460,130,player1,GLUT_BITMAP_TIMES_ROMAN_24);
+			}
+			if(Draw_game()) iShowBMP(0,0,"Pic\\\\Win\\\\Draw.bmp");
+
 		}
+		iShowBMP(700,0,"Pic\\\\extra7.bmp");
 	}
 	else if(page == 6){
 		iShowBMP(0,0,"Pic\\\\StartingPage\\\\instructions.bmp");
@@ -881,14 +969,14 @@ void iDraw() {
 }
 
 void iMouseMove(int mx, int my) {
-	//printf("x = %d, y= %d\n",mx,my);
+	////printf("x = %d, y= %d\n",mx,my);
 }
 
 void iMouse(int button, int state, int mx, int my) {
 	int movex = (mx>=52 && mx<=652)?((mx-52)/75)+1:0;
 	int movey = (my>=52 && my<=652)?((my-52)/75)+1:0;
 	count++;
-	printf("%d %d\n", mx, my);
+	//printf("%d %d\n", mx, my);
 	if(page == 0) return;
 	else if(page == 3 && count%2==0) {
 		mx -= 150;
@@ -916,7 +1004,7 @@ void iMouse(int button, int state, int mx, int my) {
 		return;
 	}
 	if((page == 1 || page == 5||page ==6 ||page == 7||page == 8) && count%2==0){
-		if(mx>=680+42 && mx<=680+158 && my>=405 && my<=520) {
+		if(((690+61+37-mx)*(690+61+37-mx))+((my-403-61)*(my-403-61))<61*61) {
 			if(musicOn){
 				musicOn = false;
 				PlaySound(0,0,0);
@@ -926,11 +1014,13 @@ void iMouse(int button, int state, int mx, int my) {
 				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
 			}
 		}
-		if(mx>=680+42 && mx<=680+158 && my>=270 && my<=384) {
+		if(((690+61+37-mx)*(690+61+37-mx))+((my-265-61)*(my-265-61))<61*61) {
 			musicindex++;
 			if(musicindex>1) musicindex =0;
-			PlaySound(0,0,0);
-			PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			if(musicOn){
+				PlaySound(0,0,0);
+				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			}
 		}
 	}
 	if(page == 1 && count%2==0) {
@@ -960,6 +1050,13 @@ void iMouse(int button, int state, int mx, int my) {
 		return;
 	}
 	else if(page == 4 && count%2==0){
+		if(mx>=700+15 && mx<=170+700 && my>=71 && my<=342){
+			page = 1;
+		}
+		else if(mx>=700+15 && mx<=170+700 && my>=391 && my<=661){
+			init();
+			page = 2;
+		}
 		return;
 	}
 	else if(page == 8 && count%2==0){
@@ -1002,6 +1099,7 @@ void iMouse(int button, int state, int mx, int my) {
 		if(page == 2){
 			init();
 			modeselected();
+			namechange();
 			musicOn =false;
 			PlaySound(0,0,0);
 		}
@@ -1029,14 +1127,76 @@ void iMouse(int button, int state, int mx, int my) {
 			else name_selected = 0;
 		}
 		else name_selected = 0;
-		if(mx>=680+42 && mx<=680+158 && my>=123 && my<=243){
+		if(((690+61+37-mx)*(690+61+37-mx))+((my-122-61)*(my-122-61))<61*61){
 			page = 8;
 			name_selected = 0;
 		}
 		return;
 	}
 	
-	if (button == GLUT_LEFT_BUTTON && movex<9 && movex>0 && movey<9 && movey>0) {
+	if(page == 2 && count%2==0){
+		if(((695+59-mx)*(695+59-mx))+((my-430)*(my-430))<31*31){
+			init();
+		}
+		else if(((695+59-mx)*(695+59-mx))+((my-353)*(my-353))<31*31){
+			if(musicOn){
+				PlaySound(0,0,0);
+				musicOn = false;
+			}
+			else{
+				musicOn = true;
+				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			}
+		}
+		else if(((695+59-mx)*(695+59-mx))+((my-273)*(my-273))<31*31){
+			Board_index++;
+			if(Board_index>=5) Board_index = 0;
+		}
+		else if(((695+143-mx)*(695+143-mx))+((my-430)*(my-430))<31*31){
+			if(modeselect == 1 && undoindex>1){
+				undoindex--;
+				for(int i=0;i<10;i++){
+					for(int j=0;j<10;j++){
+						board[i][j] = Undo[i][j][undoindex-1];
+					}
+				}
+				turn = (turn == 'W')?'B':'W';
+				moveable_index = 0;
+				eliminate_index = 0;
+				//printf("%d -------  %d",modeselect,undoindex);
+			}
+			else if(modeselect != 1) {
+				second[0] += 10;
+				if(second[0]>=60){
+					minute[0]++;
+					second[0] = second[0] %60;
+				}
+				second[1] += 10;
+				if(second[1]>=60){
+					minute[1]++;
+					second[1] = second[1] %60;
+				}
+			}
+		}
+		else if(((695+143-mx)*(695+143-mx))+((my-353)*(my-353))<31*31){
+			if(musicOn){
+				PlaySound(0,0,0);
+				musicindex++;
+				if(musicindex >=2) musicindex = 0;
+				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			}
+			else {
+				musicindex++;
+			}
+		}
+		else if(((695+143-mx)*(695+143-mx))+((my-273)*(my-273))<31*31){
+			page = 4;
+			winingindex = 0;
+			time_start = false;
+		}
+	}
+
+	if (button == GLUT_LEFT_BUTTON && movex<9 && movex>0 && movey<9 && movey>0 && page == 2) {
 		
 		if(((turn == 'W' && board[movey][movex]>0) || (turn == 'B' && board[movey][movex]<0)) && count%2 == 0){
 			selected = true;
@@ -1102,6 +1262,11 @@ void iMouse(int button, int state, int mx, int my) {
 					}
 				}
 				if(!time_start) time_start = true;
+				check_red = false;
+				if(undoindex == 0) undoindex++;
+				copy_undo();
+				undoindex++;
+				printf("undoindex = %d", undoindex);
 			}
 			if(board[movey][movex] == 1) {
 				white_x = movex;
@@ -1113,7 +1278,9 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 			moveable_index = 0;
 			eliminate_index = 0;
-			if(win_lose()) {
+			copy_board();
+			check_red = (turn == 'W')?checksystem(white_x, white_y):checksystem(black_x, black_y);
+			if(win_lose() || Draw_game()) {
 				page = 4;
 				winingindex = 0;
 				time_start = false;
@@ -1139,13 +1306,10 @@ void iKeyboard(unsigned char key) {
 			page = 8;
 		}
 	}
-	else if(page == 2 && key == 'm'){
-		page = 5;
-	}
 	else if(page == 5 && name_selected){
 		if(!((key>='a' && key<='z') || (key>='A' && key<='Z') || key == ' ' || key == 8 || key == '.')) return;
 		if(name_selected == 1 && key != 8 && player1_index<=12){
-			if(player1[player1_index-1] == ' ' && key == ' ') return;
+			if((player1[player1_index-1] == ' '|| player1_index == 0) && key == ' ') return;
 			player1[player1_index] = key;
 			player1_index++;
 			player1[player1_index] = '\0';
@@ -1156,7 +1320,7 @@ void iKeyboard(unsigned char key) {
 			player1[player1_index] = '\0';
 		}
 		else if(name_selected == -1 && key != 8 && player2_index<=12){
-			if(player2[player2_index-1] == ' ' && key == ' ') return;
+			if((player2[player2_index-1] == ' ' || player2_index == 0) && key == ' ') return;
 			player2[player2_index] = key;
 			player2_index++;
 			player2[player2_index] = '\0';
@@ -1167,7 +1331,7 @@ void iKeyboard(unsigned char key) {
 			player2[player2_index] = '\0';
 		}
 	}
-	else if(key == 'b'){
+	else if(key == 'b' || key == 'B'){
 		Board_index++;
 		if(Board_index >= 5) Board_index = 0;
 	}
@@ -1234,7 +1398,7 @@ void time(){
 			minute[turn_time]--;
 			second[turn_time] = 59;
 		}
-		if(minute[turn_time] == 0 && second[turn_time] == 0){
+		if(minute[turn_time] == 0 && second[turn_time] == 0 && modeselect != 1){
 			page = 4;
 			winingindex = 0;
 			time_start = false;
@@ -1248,7 +1412,7 @@ int main() {
 	if(musicOn){
 		PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
 	}
-	int t = iSetTimer(15, func);
+	int t = iSetTimer(5, func);
 	int t2 = iSetTimer(1000, time);
 	iInitialize(900,700,"Chess Game");
 	return 0;
