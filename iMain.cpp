@@ -3,10 +3,6 @@
 #include<mmsystem.h>
 #pragma comment(lib,"winmm.lib")
 
-/*
-2. Soundtracks
-3. White King and Both Queen BMP
-*/
 
 int page = 0;
 char turn = 'W';
@@ -22,6 +18,7 @@ int count = 0;
 int white_x, white_y, black_x, black_y;
 int temp_white_x, temp_white_y, temp_black_x, temp_black_y;
 bool check_red = false;
+bool sound = false;
 
 int selectedX,selectedY;
 bool selected = false;
@@ -466,6 +463,7 @@ void copy_undo();
 void init(){
 	copy_board();
 	modeselected();
+	check_red =false;
 	time_start = false;
 	turn_time = 1;
 	turn = 'W';
@@ -941,6 +939,10 @@ void iDraw() {
 		}
 	}
 	else if(page == 4) {
+		if(!musicOn) {
+			musicOn = true;
+			PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+		}
 		iShowBMP(0,0,Win[winingindex]);
 		if(winingindex == 29) {
 			if(turn == 'W') {
@@ -1102,6 +1104,7 @@ void iMouse(int button, int state, int mx, int my) {
 			namechange();
 			musicOn =false;
 			PlaySound(0,0,0);
+			PlaySound("music\\\\board-start.wav", NULL, SND_ASYNC);
 		}
 		return;
 	}
@@ -1255,10 +1258,14 @@ void iMouse(int button, int state, int mx, int my) {
 					if((selectedX - movex) == 2){
 						board[movey][movex+1] = board[movey][1];
 						board[movey][1] = 0;
+						if(!(musicOn || sound)) PlaySound("music\\\\castle.wav", NULL, SND_ASYNC);
+						sound = true;
 					}
 					else if((movex - selectedX) == 2){
 						board[movey][movex-1] = board[movey][8];
 						board[movey][8] = 0;
+						if(!(musicOn || sound)) PlaySound("music\\\\castle.wav", NULL, SND_ASYNC);
+						sound = true;
 					}
 				}
 				if(!time_start) time_start = true;
@@ -1267,6 +1274,8 @@ void iMouse(int button, int state, int mx, int my) {
 				copy_undo();
 				undoindex++;
 				printf("undoindex = %d", undoindex);
+				if(!(musicOn || sound)) PlaySound("music\\\\move-self.wav", NULL, SND_ASYNC);
+				sound = false;
 			}
 			if(board[movey][movex] == 1) {
 				white_x = movex;
@@ -1280,6 +1289,7 @@ void iMouse(int button, int state, int mx, int my) {
 			eliminate_index = 0;
 			copy_board();
 			check_red = (turn == 'W')?checksystem(white_x, white_y):checksystem(black_x, black_y);
+			if(check_red == true) PlaySound("music\\\\move-check.wav", NULL, SND_ASYNC);
 			if(win_lose() || Draw_game()) {
 				page = 4;
 				winingindex = 0;
