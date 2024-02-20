@@ -37,7 +37,13 @@ int additonal = 0;
 
 char Music[10][70]= {
 	"music\\\\Ltheme.wav",
-	"music\\\\cold.wav"
+	"music\\\\cold.wav",
+	"music\\\\jjk2.wav",
+	"music\\\\onmyway.wav",
+	"music\\\\unravel.wav",
+	"music\\\\unstopable.wav",
+	"music\\\\middleofthenight.wav",
+	"music\\\\pubg.wav"
 };
 int musicindex = 0;
 char additonal_sounds[50][50];
@@ -939,10 +945,6 @@ void iDraw() {
 		}
 	}
 	else if(page == 4) {
-		if(!musicOn) {
-			musicOn = true;
-			PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
-		}
 		iShowBMP(0,0,Win[winingindex]);
 		if(winingindex == 29) {
 			if(turn == 'W') {
@@ -1018,7 +1020,7 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		if(((690+61+37-mx)*(690+61+37-mx))+((my-265-61)*(my-265-61))<61*61) {
 			musicindex++;
-			if(musicindex>1) musicindex =0;
+			if(musicindex>7) musicindex =0;
 			if(musicOn){
 				PlaySound(0,0,0);
 				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
@@ -1053,11 +1055,16 @@ void iMouse(int button, int state, int mx, int my) {
 	}
 	else if(page == 4 && count%2==0){
 		if(mx>=700+15 && mx<=170+700 && my>=71 && my<=342){
+			if(!musicOn) {
+				musicOn = true;
+				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
+			}
 			page = 1;
 		}
 		else if(mx>=700+15 && mx<=170+700 && my>=391 && my<=661){
 			init();
 			page = 2;
+			if(undoindex>1) undoindex = 1;
 		}
 		return;
 	}
@@ -1102,6 +1109,7 @@ void iMouse(int button, int state, int mx, int my) {
 			init();
 			modeselected();
 			namechange();
+			if(undoindex>1) undoindex = 1;
 			musicOn =false;
 			PlaySound(0,0,0);
 			PlaySound("music\\\\board-start.wav", NULL, SND_ASYNC);
@@ -1185,7 +1193,7 @@ void iMouse(int button, int state, int mx, int my) {
 			if(musicOn){
 				PlaySound(0,0,0);
 				musicindex++;
-				if(musicindex >=2) musicindex = 0;
+				if(musicindex > 7) musicindex = 0;
 				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
 			}
 			else {
