@@ -48,6 +48,7 @@ char Music[10][70]= {
 int musicindex = 0;
 char additonal_sounds[50][50];
 int musicOn = 1;
+int winmusic = 0;
 
 int Undo[10][10][100];
 int undoindex = 0;
@@ -935,6 +936,7 @@ void iDraw() {
 		iShowBMP(670,0,"Pic\\\\extra2.bmp");
 		iShowBMP2(690,0,Buttons[musicOn],255);
 		iShowBMP2(690,0,"Pic\\\\BUttonPage5.bmp",255);
+		iShowBMP2(0,0,"Pic\\\\NameInput\\\\extra.bmp",255);
 	}
 	else if(page == 3) {
 		if(turn == 'W') {
@@ -945,6 +947,11 @@ void iDraw() {
 		}
 	}
 	else if(page == 4) {
+		if(winmusic == 0 && !musicOn){
+			PlaySound(0,0,0);
+			PlaySound("music\\\\Win.wav", NULL, SND_LOOP | SND_ASYNC);
+			winmusic = 1;
+		}
 		iShowBMP(0,0,Win[winingindex]);
 		if(winingindex == 29) {
 			if(turn == 'W') {
@@ -1057,13 +1064,19 @@ void iMouse(int button, int state, int mx, int my) {
 		if(mx>=700+15 && mx<=170+700 && my>=71 && my<=342){
 			if(!musicOn) {
 				musicOn = true;
+				PlaySound(0,0,0);
 				PlaySound(Music[musicindex], NULL, SND_LOOP | SND_ASYNC);
 			}
 			page = 1;
+			winmusic = 0;
 		}
 		else if(mx>=700+15 && mx<=170+700 && my>=391 && my<=661){
 			init();
 			page = 2;
+			if(winmusic == 1){
+				PlaySound(0,0,0);
+			}
+			winmusic = 0;
 			if(undoindex>1) undoindex = 1;
 		}
 		return;
@@ -1174,6 +1187,7 @@ void iMouse(int button, int state, int mx, int my) {
 				turn = (turn == 'W')?'B':'W';
 				moveable_index = 0;
 				eliminate_index = 0;
+				check_red = (turn == 'W')?checksystem(white_x, white_y):checksystem(black_x, black_y);
 				//printf("%d -------  %d",modeselect,undoindex);
 			}
 			else if(modeselect != 1) {
