@@ -886,10 +886,10 @@ void iDraw() {
 			iShowBMP2(cirx,ciry,path[(((p*-1)-1)*4)+3],0);
 		}
 	}
-	iShowBMP2(695,5,"Pic\\\\textbox.bmp",0);
-	iShowBMP2(695,605,"Pic\\\\textbox.bmp",0);
-	iText(710,50,player1,GLUT_BITMAP_HELVETICA_18);
-	iText(710,650,player2,GLUT_BITMAP_HELVETICA_18);
+	iShowBMP2(680,5,"Pic\\\\textbox.bmp",0);
+	iShowBMP2(680,605,"Pic\\\\textbox.bmp",0);
+	iText(699,50,player1,GLUT_BITMAP_HELVETICA_18);
+	iText(699,650,player2,GLUT_BITMAP_HELVETICA_18);
 	char str[6];
 	str[0] = '1' -1+(minute[0]/10);
 	str[1] = '1' -1+(minute[0]%10);
@@ -906,8 +906,8 @@ void iDraw() {
 	str2[5] = '\0';
 	if(Board_index == 4) iSetColor(255,255,255);
 	if(modeselect != 1){
-		iText(770,613,str,GLUT_BITMAP_TIMES_ROMAN_24);
-		iText(770,85,str2,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(770,601,str,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(770,90,str2,GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 	iShowBMP2(695,0,Buttons[musicOn+2],255);
 	if(modeselect != 1) iShowBMP2(695,0,"Pic\\\\plusten.bmp",255);
@@ -937,6 +937,7 @@ void iDraw() {
 		iShowBMP2(690,0,Buttons[musicOn],255);
 		iShowBMP2(690,0,"Pic\\\\BUttonPage5.bmp",255);
 		iShowBMP2(0,0,"Pic\\\\NameInput\\\\extra.bmp",255);
+		iShowBMP2(435,348,"Pic\\\\NameInput\\\\nameswap.bmp",0);
 	}
 	else if(page == 3) {
 		if(turn == 'W') {
@@ -987,7 +988,7 @@ void iMouse(int button, int state, int mx, int my) {
 	int movex = (mx>=52 && mx<=652)?((mx-52)/75)+1:0;
 	int movey = (my>=52 && my<=652)?((my-52)/75)+1:0;
 	count++;
-	//printf("%d %d\n", mx, my);
+	printf("%d %d\n", mx, my);
 	if(page == 0) return;
 	else if(page == 3 && count%2==0) {
 		mx -= 150;
@@ -1151,6 +1152,34 @@ void iMouse(int button, int state, int mx, int my) {
 			else name_selected = 0;
 		}
 		else name_selected = 0;
+		//435,348,
+		if(((435+35-mx)*(435+35-mx))+((my-348-35)*(my-348-35))<30*30){
+			if(!((player1[0] == '\0' && player2[0] == '(') || (player1[0] == '(' && player2[0] == '\0'))){
+				char temp_name[20];
+				int ind = 0;
+				while(player1[ind]!='\0'){
+					temp_name[ind] = player1[ind];
+					ind++;
+				}
+				temp_name[ind] = '\0';
+				ind = 0;
+				while(player2[ind]!='\0'){
+					player1[ind] = player2[ind];
+					ind++;
+				}
+				player1[ind] = '\0';
+				ind = 0;
+				while(temp_name[ind]!='\0'){
+					player2[ind] = temp_name[ind];
+					ind++;
+				}
+				player2[ind] = '\0';
+				printf("haha");
+				ind = player1_index;
+				player1_index = player2_index;
+				player2_index = ind;
+			}
+		}
 		if(((690+61+37-mx)*(690+61+37-mx))+((my-122-61)*(my-122-61))<61*61){
 			page = 8;
 			name_selected = 0;
@@ -1340,8 +1369,9 @@ void iKeyboard(unsigned char key) {
 	}
 	else if(page == 5 && name_selected){
 		if(!((key>='a' && key<='z') || (key>='A' && key<='Z') || key == ' ' || key == 8 || key == '.')) return;
-		if(name_selected == 1 && key != 8 && player1_index<=12){
+		if(name_selected == 1 && key != 8 && player1_index<=9){
 			if((player1[player1_index-1] == ' '|| player1_index == 0) && key == ' ') return;
+			if((player1[player1_index-1] == '.'|| player1_index == 0) && key == '.') return;
 			player1[player1_index] = key;
 			player1_index++;
 			player1[player1_index] = '\0';
@@ -1351,8 +1381,9 @@ void iKeyboard(unsigned char key) {
 			player1_index--;
 			player1[player1_index] = '\0';
 		}
-		else if(name_selected == -1 && key != 8 && player2_index<=12){
+		else if(name_selected == -1 && key != 8 && player2_index<=9){
 			if((player2[player2_index-1] == ' ' || player2_index == 0) && key == ' ') return;
+			if((player2[player2_index-1] == '.' || player2_index == 0) && key == '.') return;
 			player2[player2_index] = key;
 			player2_index++;
 			player2[player2_index] = '\0';
