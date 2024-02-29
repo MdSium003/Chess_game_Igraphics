@@ -1043,10 +1043,12 @@ void iDraw() {
 		leaderboardshow[temp_ind][temp_file_ind] = 0;
 		fclose(file);
 		for(int muri=0,minus=0;muri<10;muri++,minus-=30){
-			iText(125,413+minus,"-> ",GLUT_BITMAP_TIMES_ROMAN_24);
+			if(leaderboardshow[muri][0]!= '\0') iText(125,413+minus,"-> ",GLUT_BITMAP_TIMES_ROMAN_24);
 			iText(125+31,413+minus,leaderboardshow[muri],GLUT_BITMAP_HELVETICA_18);
 		}
-		
+		if(leaderboardshow[0][0] == '\0'){
+			iText(125,303,"NO PREVIOUS GAME RECORDS FOUND!!",GLUT_BITMAP_TIMES_ROMAN_24);
+		}
 	}
 }
 
