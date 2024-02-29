@@ -671,7 +671,7 @@ void GetCoordinates(int x, int y){
 	moveable_index = 0;
 	eliminate_index = 0;
 	int p = (board[y][x]>0)?board[y][x]:-1*board[y][x];
-	////printf("%d\n", p);
+	//printf("%d\n", p);
 	for(int i=0;i<types[p].dirsize;i++){
 		int movex = x;
 		int movey = y;
@@ -847,6 +847,13 @@ void GetCoordinates(int x, int y){
 			}
 		}
 	}
+	printf("movable and eli - %d %d", moveable_index, eliminate_index);
+	for(int muri=0;muri<moveable_index;muri++){
+		printf("movable index = %d %d\n", moveable[muri][0], moveable[muri][1]);
+	}
+	for(int muri=0;muri<eliminate_index;muri++){
+		printf("eliminate index = %d %d\n", eliminate[muri][0], eliminate[muri][1]);
+	}
 }
 
 void iDraw() {
@@ -876,11 +883,15 @@ void iDraw() {
 		y += (75);
 	}
 	for(int i=0;i<moveable_index;i++){
+		//printf("haha");
+		if(!((moveable[i][0]>=1 && moveable[i][0]<=8 )&&(moveable[i][1]>=1 && moveable[i][1]<=8 ))) continue;
 		int cirx = (moveable[i][0]*75) +(52-75) + 4;
 		int ciry = (moveable[i][1]*75) +(52-75) + 4;
 		iShowBMP2(cirx,ciry,"Pic\\\\Pieces\\\\circle.bmp",255);
 	}
 	for(i=0;i<eliminate_index;i++){
+		//printf("haha2");
+		if(!((eliminate[i][0]>=1 && eliminate[i][0]<=8 )&&(eliminate[i][1]>=1 && eliminate[i][1]<=8 ))) continue;
 		int cirx = (eliminate[i][0]*75) +(52-75) + 4;
 		int ciry = (eliminate[i][1]*75) +(52-75) + 4;
 		int p = board[eliminate[i][1]][eliminate[i][0]];
