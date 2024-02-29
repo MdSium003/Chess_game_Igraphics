@@ -455,6 +455,11 @@ struct Piece
 
 Piece types[7];
 
+char file_name[100] = "Leaderboard.txt";
+FILE* file;
+char leaderboardshow[10][200]={0,0,0,0,0,0,0,0,0,0};
+int leaderboard_ind = 0;
+
 void init();
 void copy_board();
 bool win_lose();
@@ -920,6 +925,7 @@ void iDraw() {
 		iShowBMP(0,0,Starting[startingpageindex]);
 		iShowBMP(670,0,"Pic\\\\extra2.bmp");
 		iShowBMP2(690,0,Buttons[musicOn],255);
+		iShowBMP2(690,0,"Pic\\\\StartingPage\\\\Leaderboard.bmp",255);
 	}
 	else if(page == 8){
 		iShowBMP(0,0,Mode[modeindex]);
@@ -978,6 +984,59 @@ void iDraw() {
 		iShowBMP(670,0,"Pic\\\\extra.bmp");
 		iShowBMP2(690,0,Buttons[musicOn],255);
 	}
+	else if(page == 9){
+		iShowBMP(0,0,"Pic\\\\StartingPage\\\\Leaderboard_page.bmp");
+		iShowBMP(670,0,"Pic\\\\extra.bmp");
+		iShowBMP2(690,0,Buttons[musicOn],255);
+		file = fopen(file_name, "r");
+		leaderboard_ind = 0;
+		char temp_name = fgetc(file);
+		while(!feof(file)){
+			if(temp_name == '-'){
+				leaderboard_ind++;
+			}
+			temp_name = fgetc(file);
+		}
+		//printf("leader %d", leaderboard_ind);
+		int temp_ind = 0;
+		if(leaderboard_ind>10){
+			leaderboard_ind -= 10;
+			temp_ind = 9;
+		}
+		else {
+			temp_ind = leaderboard_ind-1;
+			leaderboard_ind = 0;
+		}
+		rewind(file);
+		temp_name = fgetc(file);
+		int temp_file_ind=0;
+		while(!feof(file)){
+			if(temp_name == '-'){
+				if(leaderboard_ind>0) {
+					leaderboard_ind--;
+					temp_file_ind = 0;
+				}
+				else {
+					leaderboardshow[temp_ind][temp_file_ind] = 0;
+					temp_file_ind = 0;
+					//printf("%s %d\n", leaderboardshow[temp_ind], temp_ind);
+					temp_ind--;
+				}
+			}
+			else {
+				leaderboardshow[temp_ind][temp_file_ind] = temp_name;
+				temp_file_ind++;
+			}
+			temp_name = fgetc(file);
+		}
+		leaderboardshow[temp_ind][temp_file_ind] = 0;
+		fclose(file);
+		for(int muri=0,minus=0;muri<10;muri++,minus-=30){
+			iText(125,413+minus,"-> ",GLUT_BITMAP_TIMES_ROMAN_24);
+			iText(125+31,413+minus,leaderboardshow[muri],GLUT_BITMAP_HELVETICA_18);
+		}
+		
+	}
 }
 
 void iMouseMove(int mx, int my) {
@@ -1015,7 +1074,7 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		return;
 	}
-	if((page == 1 || page == 5||page ==6 ||page == 7||page == 8) && count%2==0){
+	if((page == 1 || page == 5||page ==6 ||page == 7||page == 8||page == 9) && count%2==0){
 		if(((690+61+37-mx)*(690+61+37-mx))+((my-403-61)*(my-403-61))<61*61) {
 			if(musicOn){
 				musicOn = false;
@@ -1047,6 +1106,9 @@ void iMouse(int button, int state, int mx, int my) {
 				page = 5;
 			}
 		}
+		if(((690+61+37-mx)*(690+61+37-mx))+((my-122-61)*(my-122-61))<61*61){
+			page = 9;
+		}
 		return;
 	}
 	else if(page == 6 && count%2==0){
@@ -1056,6 +1118,12 @@ void iMouse(int button, int state, int mx, int my) {
 		return;
 	}
 	else if(page == 7 && count%2==0){
+		if(mx>=26 && mx<=192 && my<=683 && my>=613){
+			page = 1;
+		}
+		return;
+	}
+	else if(page == 9 && count%2==0){
 		if(mx>=26 && mx<=192 && my<=683 && my>=613){
 			page = 1;
 		}
@@ -1152,7 +1220,6 @@ void iMouse(int button, int state, int mx, int my) {
 			else name_selected = 0;
 		}
 		else name_selected = 0;
-		//435,348,
 		if(((435+35-mx)*(435+35-mx))+((my-348-35)*(my-348-35))<30*30){
 			if(!((player1[0] == '\0' && player2[0] == '(') || (player1[0] == '(' && player2[0] == '\0'))){
 				char temp_name[20];
@@ -1247,6 +1314,11 @@ void iMouse(int button, int state, int mx, int my) {
 			page = 4;
 			winingindex = 0;
 			time_start = false;
+			file = fopen(file_name, "a");
+			rewind(file);
+			if(turn == 'W') fprintf(file,"%s Won against %s\n-", player2, player1);
+			else fprintf(file,"%s Won against %s\n-", player1, player2);
+			fclose(file);
 		}
 	}
 
@@ -1341,7 +1413,16 @@ void iMouse(int button, int state, int mx, int my) {
 			copy_board();
 			check_red = (turn == 'W')?checksystem(white_x, white_y):checksystem(black_x, black_y);
 			if(check_red == true) PlaySound("music\\\\move-check.wav", NULL, SND_ASYNC);
-			if(win_lose() || Draw_game()) {
+			if(win_lose()) {
+				page = 4;
+				winingindex = 0;
+				time_start = false;
+				file = fopen(file_name, "a");
+				if(turn == 'W') fprintf(file,"%s Won against %s\n-", player2, player1);
+				else fprintf(file,"%s Won against %s\n-", player1, player2);
+				fclose(file);
+			}
+			if(Draw_game()) {
 				page = 4;
 				winingindex = 0;
 				time_start = false;
@@ -1465,6 +1546,10 @@ void time(){
 			page = 4;
 			winingindex = 0;
 			time_start = false;
+			file = fopen(file_name, "a");
+			if(turn == 'W') fprintf(file,"%s Won against %s\n-", player2, player1);
+			else fprintf(file,"%s Won against %s\n-", player1, player2);
+			fclose(file);
 		} 
 	}
 }
