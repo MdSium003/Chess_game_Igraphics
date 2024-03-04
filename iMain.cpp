@@ -937,6 +937,7 @@ void iDraw() {
 		iShowBMP(670,0,"Pic\\\\extra2.bmp");
 		iShowBMP2(690,0,Buttons[musicOn],255);
 		iShowBMP2(690,0,"Pic\\\\StartingPage\\\\Leaderboard.bmp",255);
+		iShowBMP2(690,0,"Pic\\\\exit.bmp",255);
 	}
 	else if(page == 8){
 		iShowBMP(0,0,Mode[modeindex]);
@@ -1121,6 +1122,9 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		if(((690+61+37-mx)*(690+61+37-mx))+((my-122-61)*(my-122-61))<61*61){
 			page = 9;
+		}
+		if(mx>=704 && mx<=870 && my<=54 && my>=22){
+			exit(0);
 		}
 		return;
 	}
